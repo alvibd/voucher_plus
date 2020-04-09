@@ -7,6 +7,8 @@ Easy Installation
 - docker-compose
 
 **Installation Step**
+- clone the repository: `$ git clone https://github.com/alvibd/voucher_plus.git`
+- go to project directory: `$ cd voucher_plus`
 - run server: `$ docker-compose up -d`
 - run: `$ docker exec db bash`
 - run: `:/# mysql -u root -p` 
