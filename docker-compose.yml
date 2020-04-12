@@ -70,11 +70,30 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=root
     volumes:
       - ./mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-      - dbdata:/data/dbdata
+      - mongodata:/data/dbdata
 
     networks:
       - app-network
 
+
+#elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.8
+    container_name: elasticsearch
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - app-network
 
 #Docker Networks
 networks:
@@ -85,4 +104,9 @@ networks:
 volumes:
   dbdata:
     driver: local
+  mongodata:
+    driver: local
+  esdata:
+    driver: local
+
 
