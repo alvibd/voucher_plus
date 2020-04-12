@@ -72,6 +72,9 @@ services:
       - ./mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - dbdata:/data/dbdata
 
+    networks:
+      - app-network
+
 
 #Docker Networks
 networks:
