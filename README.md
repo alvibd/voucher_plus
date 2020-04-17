@@ -20,6 +20,7 @@ Easy Installation
 - run: `$ docker-compose exec app composer install`
 - run: `$ docker-compose exec app cp .env.example .env`
 - run: `$ docker-compose exec app php artisan key:generate`
+- run migration: `$ docker-compose exec app php artisan migrate`
 - compile js,css files: `$ docker-compose exec app npm install && npm run dev`
 - go to `localhost:8080`
 
