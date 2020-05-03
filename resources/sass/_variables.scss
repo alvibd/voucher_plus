@@ -27,9 +27,13 @@ $yellow:  #FF8800 !default;
 $green:   #77B300 !default;
 $teal:    #20c997 !default;
 $cyan:    #9933CC !default;
+//theme custom colors
+$cyan-100: #00adb5 !default;
+$grey-110: #eeeeee !default;
 
-$primary:       $blue !default;
-$secondary:     $gray-600 !default;
+
+$primary:       $cyan-100 !default;//$cyan
+$secondary:     $grey-110 !default;//$grey-600
 $success:       $green !default;
 $info:          $cyan !default;
 $warning:       $yellow !default;
