@@ -29,12 +29,9 @@ class RegistrationTest extends TestCase
 
         // dd($response->getContent());
 
-        $response->assertStatus(422)
-                ->assertExactJson([
-                    'message' => 'The given data was invalid.',
-                    'errors' => ['name' => ['The name field is required.']]
-                ])
-        ;
+        $response->assertJsonValidationErrors([
+            'name' => 'The name field is required.',
+        ]);
     }
 
     /**
@@ -49,12 +46,9 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $response->assertStatus(422)
-                ->assertExactJson([
-                    'message' => 'The given data was invalid.',
-                    'errors' => ['name' => ['The name must be a string.']]
-                ])
-        ;
+        $response->assertJsonValidationErrors([
+            'name' => 'The name must be a string.'
+            ]);
     }
 
     /**
@@ -69,12 +63,9 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $response->assertStatus(422)
-                ->assertExactJson([
-                    'message' => 'The given data was invalid.',
-                    'errors' => ['email' => ['The email must be a valid email address.']]
-                ])
-        ;
+        $response->assertJsonValidationErrors([
+            'email' => 'The email must be a valid email address.'
+        ]);
     }
 
     /**
@@ -89,12 +80,9 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $response->assertStatus(422)
-                ->assertExactJson([
-                    'message' => 'The given data was invalid.',
-                    'errors' => ['email' => ['The email field is required.']]
-                ])
-        ;
+        $response->assertJsonValidationErrors([
+            'email' => "The email field is required."
+        ]);
     }
 
     /**
@@ -113,12 +101,9 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $response->assertStatus(422)
-                ->assertExactJson([
-                    'message' => 'The given data was invalid.',
-                    'errors' => ['email' => ['The email has already been taken.']]
-                ])
-        ;
+        $response->assertJsonValidationErrors([
+            'email' => 'The email has already been taken.'
+        ]);
 
 
     }
@@ -135,12 +120,9 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $response->assertStatus(422)
-                ->assertExactJson([
-                    'message' => 'The given data was invalid.',
-                    'errors' => ['password' => ['The password field is required.']]
-                ])
-        ;
+        $response->assertJsonValidationErrors([
+            'password' => "The password field is required."
+        ]);
     }
 
     /**
@@ -155,12 +137,9 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 123,
         ]);
 
-        $response->assertStatus(422)
-                ->assertExactJson([
-                    'message' => 'The given data was invalid.',
-                    'errors' => ['password' => ['The password must be a string.', 'The password must be at least 8 characters.']]
-                ])
-        ;
+        $response->assertJsonValidationErrors([
+            'password' => "The password must be a string."
+        ]);
     }
 
     /**
@@ -175,16 +154,15 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'string',
         ]);
 
-        $response->assertStatus(422)
-                ->assertExactJson([
-                    'message' => 'The given data was invalid.',
-                    'errors' => ['password' => ['The password must be at least 8 characters.']]
-                ])
-        ;
+        $response->assertJsonValidationErrors([
+            'password' => 'The password must be at least 8 characters.'
+        ]);
     }
 
-    /** @ test */
-    public function validate_password_confirmation_mathc()
+    /**
+     * @test
+     * */
+    public function validate_password_confirmation_match()
     {
         $response = $this->postJson('api/registration',[
             'name' => 'john doe',
@@ -194,18 +172,8 @@ class RegistrationTest extends TestCase
         ]);
 
         $response->assertJsonValidationErrors([
-            'name' => 'john doe',
-            'email' => 'john@mail.com',
-            'password' => 'password',
-            'password_confirmation' => 'not_password',
+            'password' => 'The password confirmation does not match.'
         ]);
-
-        $response->assertStatus(422)
-                ->assertExactJson([
-                    'message' => 'The given data was invalid.',
-                    'errors' => ['password' => ['The password confirmation does not match.']]
-                ])
-        ;
     }
 
     /**
