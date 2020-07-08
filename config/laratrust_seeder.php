@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'role_structure' => [
+    'roles_structure' => [
         'superadministrator' => [
             'users' => 'c,r,u,d',
             'acl' => 'c,r,u,d',
