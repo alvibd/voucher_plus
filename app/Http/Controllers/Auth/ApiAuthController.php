@@ -46,6 +46,11 @@ class ApiAuthController extends Controller
      */
     public function login(Request $request)
     {
+        $this->validate($request, [
+            'email' => 'required|email:rfc,dns',
+            'password' => 'required|string',
+        ]);
+        
         $credentials = $request->only('email', 'password');
 
         if ($token = $this->guard()->attempt($credentials)) {
