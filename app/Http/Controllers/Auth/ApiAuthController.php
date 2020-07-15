@@ -50,7 +50,7 @@ class ApiAuthController extends Controller
             'email' => 'required|email:rfc,dns',
             'password' => 'required|string',
         ]);
-        
+
         $credentials = $request->only('email', 'password');
 
         if ($token = $this->guard()->attempt($credentials)) {
@@ -117,6 +117,5 @@ class ApiAuthController extends Controller
     {
         return Auth::guard('api');
     }
-
 
 }

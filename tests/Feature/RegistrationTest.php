@@ -11,6 +11,7 @@ use Tests\TestCase;
 class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * A basic feature test example.
      *
@@ -190,8 +191,8 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $this->assertDatabaseCount('users', 1);
-        $this->assertEquals(1, User::first()->hasRole('user'));
+        $this->assertDatabaseCount('users', 3);
+        $this->assertEquals(1, User::latest()->first()->hasRole('user'));
 
         // dd($response->getContent());
 
