@@ -30,6 +30,7 @@ class VendorController extends Controller
             'organization_name' => 'required|string|max:200|unique_translation:vendors,name',
             'contact_no' => 'required|string',
             'address' => 'required|string',
+            'city' => 'required|string',
             'postal_code' => 'required|string',
             'tin_no' => 'nullable|alpha_num',
             'organization_type' => ['required', Rule::in(['sole proprietorship', 'partnership', 'corporation', 'limited liability company'])]

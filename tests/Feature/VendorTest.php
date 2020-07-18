@@ -38,7 +38,8 @@ class VendorTest extends TestCase
             'contact_no' => null,
             'address' => null,
             'postal_code' => null,
-            'organization_type' => null
+            'organization_type' => null,
+            'city' => null,
         ]);
 
         $response->assertJsonValidationErrors([
@@ -46,7 +47,8 @@ class VendorTest extends TestCase
             'contact_no' => 'The contact no field is required.',
             'address' => 'The address field is required.',
             'postal_code' => 'The postal code field is required.',
-            'organization_type' => 'The organization type field is required.'
+            'organization_type' => 'The organization type field is required.',
+            'city' => 'The city field is required.'
         ]);
     }
 
@@ -55,12 +57,15 @@ class VendorTest extends TestCase
      */
     public function validate_organization_name_is_string()
     {
+        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id]);
+
         $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
             'organization_name' => 123,
-            'contact_no' => 01654642132,
-            'address' => 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
-            'postal_code' => 1222,
-            'organization_type' => 'corporation'
+            'contact_no' => $vendor->contact_no,
+            'address' => $vendor->address,
+            'postal_code' => $vendor->postal_code,
+            'city' => $vendor->city,
+            'organization_type' => $vendor->organization_type
         ]);
 
         $response->assertJsonValidationErrors(['organization_name' => 'The organization name must be a string.']);
@@ -79,6 +84,7 @@ class VendorTest extends TestCase
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
+            'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
             'organization_type' => $vendor->organization_type
         ]);
@@ -119,11 +125,31 @@ class VendorTest extends TestCase
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => 1586,
+            'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
             'organization_type' => $vendor->organization_type
         ]);
 
         $response->assertJsonValidationErrors(['address' => 'The address must be a string.']);
+    }
+
+    /**
+     * @test
+     */
+    public function validate_city_name_is_string()
+    {
+        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id]);
+
+        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+            'organization_name' => $vendor->name,
+            'contact_no' => $vendor->contact_no,
+            'address' => $vendor->address,
+            'postal_code' => $vendor->postal_code,
+            'city' => 123,
+            'organization_type' => $vendor->organization_type
+        ]);
+
+        $response->assertJsonValidationErrors(['city' => 'The city must be a string.']);
     }
 
     /**
@@ -159,6 +185,7 @@ class VendorTest extends TestCase
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
+            'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
             'organization_type' => 'not_valid_type'
         ]);
@@ -177,6 +204,7 @@ class VendorTest extends TestCase
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
+            'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
             'tin_no' => '213-asda',
             'organization_type' => $vendor->organization_type
@@ -197,6 +225,7 @@ class VendorTest extends TestCase
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
+            'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
             'tin_no' => $vendor->tin_no,
             'organization_type' => $vendor->organization_type
@@ -204,7 +233,7 @@ class VendorTest extends TestCase
 
         $this->assertDatabaseCount('vendors', 1);
         $this->assertDatabaseHas('vendors', [
-            // 'name' => json_encode(['en' => $vendor->name]),
+            // 'name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
             'postal_code' => $vendor->postal_code,
@@ -229,6 +258,7 @@ class VendorTest extends TestCase
         $this->assertDatabaseHas('vendors', [
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
+            'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
             'tin_no' => $vendor->tin_no,
         ]);
@@ -310,6 +340,8 @@ class VendorTest extends TestCase
 
         $response->assertJsonValidationErrors(['postal_code' => 'The postal code field is required.']);
     }
+
+
 
     /**
      * @test

@@ -19,5 +19,6 @@ $factory->define(Vendor::class, function (Faker $faker) {
         'organization_type' => $types[array_rand($types)],
         'user_id' => factory(App\User::class),
         'tin_no' => $faker->taxpayerIdentificationNumber,
+        'city' => $faker->city
     ];
 });

@@ -21,6 +21,7 @@ class CreateVendorsTable extends Migration
             $table->string('postal_code');
             $table->string('organization_type');
             $table->string('tin_no')->nullable();
+            $table->string('city')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->boolean('verified')->default(false);
             $table->softDeletes('deleted_at', 0);
