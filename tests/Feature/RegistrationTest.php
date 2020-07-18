@@ -191,7 +191,7 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $this->assertDatabaseCount('users', 3);
+        $this->assertDatabaseCount('users', 1);
         $this->assertEquals(1, User::latest()->first()->hasRole('user'));
 
         // dd($response->getContent());

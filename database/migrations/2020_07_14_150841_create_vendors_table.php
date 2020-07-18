@@ -23,7 +23,7 @@ class CreateVendorsTable extends Migration
             $table->string('tin_no')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->boolean('verified')->default(false);
-            $table->timestamp('deleted_at');
+            $table->softDeletes('deleted_at', 0);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

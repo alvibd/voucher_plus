@@ -202,7 +202,7 @@ class VendorTest extends TestCase
             'organization_type' => $vendor->organization_type
         ]);
 
-        $this->assertDatabaseCount('vendors', 2);
+        $this->assertDatabaseCount('vendors', 1);
         $this->assertDatabaseHas('vendors', [
             // 'name' => json_encode(['en' => $vendor->name]),
             'contact_no' => $vendor->contact_no,
@@ -240,7 +240,7 @@ class VendorTest extends TestCase
             'tin_no' => $vendor->tin_no,
         ]);
 
-        $response->dump();
+        // $response->dump();
 
         $response->assertForbidden();
     }
@@ -290,7 +290,7 @@ class VendorTest extends TestCase
             'tin_no' => $vendor->tin_no,
         ]);
 
-        $response->assertJsonValidationErrors(['address' => 'The address field must be string.']);
+        $response->assertJsonValidationErrors(['address' => 'The address must be a string.']);
     }
 
     /**
@@ -308,7 +308,7 @@ class VendorTest extends TestCase
             'tin_no' => $vendor->tin_no,
         ]);
 
-        $response->assertJsonValidationErrors(['address' => 'The address field is required.']);
+        $response->assertJsonValidationErrors(['postal_code' => 'The postal code field is required.']);
     }
 
     /**
