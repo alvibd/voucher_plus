@@ -6,12 +6,14 @@ use App\User;
 use App\Vendor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use LaratrustSeeder;
 use Tests\TestCase;
 
 class VendorTest extends TestCase
 {
     use RefreshDatabase;
+    // use WithoutMiddleware;
 
     private $user;
 
@@ -167,6 +169,25 @@ class VendorTest extends TestCase
     /**
      * @test
      */
+    public function validate_tin_no_is_alphanumeric()
+    {
+        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id]);
+
+        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+            'organization_name' => $vendor->name,
+            'contact_no' => $vendor->contact_no,
+            'address' => $vendor->address,
+            'postal_code' => $vendor->postal_code,
+            'tin_no' => '213-asda',
+            'organization_type' => $vendor->organization_type
+        ]);
+
+        $response->assertJsonValidationErrors(['tin_no' => 'The tin no may only contain letters and numbers.']);
+    }
+
+    /**
+     * @test
+     */
     public function vendor_registration_successful()
     {
 
@@ -177,6 +198,7 @@ class VendorTest extends TestCase
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
             'postal_code' => $vendor->postal_code,
+            'tin_no' => $vendor->tin_no,
             'organization_type' => $vendor->organization_type
         ]);
 
@@ -193,5 +215,126 @@ class VendorTest extends TestCase
         $this->assertTrue($this->user->hasRole('owner'));
 
         $response->assertStatus(200)->assertExactJson(['message' => 'Successfully created your business.']);
+    }
+
+    /**
+     * @test
+     */
+    public function validate_only_owner_can_change_info()
+    {
+        $vendor = factory(Vendor::class)->create();
+
+        $this->user->attachRole('owner');
+
+        $this->assertDatabaseHas('vendors', [
+            'contact_no' => $vendor->contact_no,
+            'address' => $vendor->address,
+            'postal_code' => $vendor->postal_code,
+            'tin_no' => $vendor->tin_no,
+        ]);
+
+        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+            'contact_no' => $vendor->contact_no,
+            'address' => $vendor->address,
+            'postal_code' => $vendor->postal_code,
+            'tin_no' => $vendor->tin_no,
+        ]);
+
+        $response->dump();
+
+        $response->assertForbidden();
+    }
+
+    /**
+     * @test
+     */
+    public function validate_contact_no_for_edit()
+    {
+        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id]);
+        $this->user->attachRole('owner');
+
+        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+            'contact_no' => null,
+            'address' => $vendor->address,
+            'postal_code' => $vendor->postal_code,
+            'tin_no' => $vendor->tin_no,
+        ]);
+
+        // dd($response->getStatus());
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['contact_no' => 'The contact no field is required.']);
+    }
+
+    /**
+     * @test
+     */
+    public function validate_address_for_edit()
+    {
+        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id]);
+
+        $this->user->attachRole('owner');
+
+        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+            'contact_no' => $vendor->contact_no,
+            'address' => null,
+            'postal_code' => $vendor->postal_code,
+            'tin_no' => $vendor->tin_no,
+        ]);
+
+        $response->assertJsonValidationErrors(['address' => 'The address field is required.']);
+
+        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+            'contact_no' => $vendor->contact_no,
+            'address' => 234,
+            'postal_code' => $vendor->postal_code,
+            'tin_no' => $vendor->tin_no,
+        ]);
+
+        $response->assertJsonValidationErrors(['address' => 'The address field must be string.']);
+    }
+
+    /**
+     * @test
+     */
+    public function validate_postal_code_for_edit()
+    {
+        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id]);
+        $this->user->attachRole('owner');
+
+        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+            'contact_no' => $vendor->contact_no,
+            'address' => $vendor->address,
+            'postal_code' => null,
+            'tin_no' => $vendor->tin_no,
+        ]);
+
+        $response->assertJsonValidationErrors(['address' => 'The address field is required.']);
+    }
+
+    /**
+     * @test
+     */
+    public function edit_successful()
+    {
+        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id]);
+        $this->user->attachRole('owner');
+
+        $new_info = factory(Vendor::class)->make(['user_id' => $this->user->id]);
+
+        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+            'contact_no' => $new_info->contact_no,
+            'address' => $new_info->address,
+            'postal_code' => $new_info->postal_code,
+            'tin_no' => $new_info->tin_no,
+        ]);
+
+        $this->assertDatabaseHas('vendors', [
+            'contact_no' => $new_info->contact_no,
+            'address' => $new_info->address,
+            'postal_code' => $new_info->postal_code,
+            'tin_no' => $new_info->tin_no,
+            ]);
+
+        $response->assertStatus(200)->assertExactJson(['message' => 'Successfully saved your changes.']);
     }
 }

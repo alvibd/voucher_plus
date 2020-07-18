@@ -31,6 +31,7 @@ class VendorController extends Controller
             'contact_no' => 'required|string',
             'address' => 'required|string',
             'postal_code' => 'required|string',
+            'tin_no' => 'nullable|alpha_num',
             'organization_type' => ['required', Rule::in(['sole proprietorship', 'partnership', 'corporation', 'limited liability company'])]
         ]);
 
@@ -42,11 +43,12 @@ class VendorController extends Controller
         $vendor->contact_no = $request->contact_no;
         $vendor->address = $request->address;
         $vendor->postal_code = $request->postal_code;
+        $vendor->tin_no = $request->tin_no;
         $vendor->organization_type = $request->organization_type;
 
         $vendor->user()->associate($user);
 
-        $vendor->save();
+        $vendor->saveOrFail();
 
         if(!$user->isAn('owner')){
             $user->attachRole('owner');
@@ -75,7 +77,28 @@ class VendorController extends Controller
      */
     public function update(Request $request, Vendor $vendor)
     {
-        //
+        // dd(auth()->id());
+        // dd($vendor);
+        if(!auth()->user()->hasRoleAndOwns('owner', $vendor))
+        {
+            abort(403);
+        }
+
+        $this->validate($request, [
+            'contact_no' => 'required|string',
+            'address' => 'required|string',
+            'postal_code' => 'required|string',
+            'tin_no' => 'nullable|alpha_num',
+        ]);
+
+        $vendor->contact_no = $request->contact_no;
+        $vendor->address = $request->address;
+        $vendor->postal_code = $request->postal_code;
+        $vendor->tin_no = $request->tin_no;
+
+        $vendor->save();
+
+        return response()->json(['message' => 'Successfully saved your changes.']);
     }
 
     /**

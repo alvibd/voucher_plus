@@ -26,4 +26,10 @@ Route::middleware('api')->namespace('Auth')->group(function(){
 
 Route::middleware('auth:api')->group(function(){
     Route::post('/vendor/registration', 'VendorController@store');
+    Route::patch('/vendor/edit/{vendor}', 'VendorController@update');
 });
+
+Route::middleware(['auth:api', 'role:owner'])->group(function(){
+    Route::patch('/vendor/edit/{vendor}', 'VendorController@update');
+});
+
