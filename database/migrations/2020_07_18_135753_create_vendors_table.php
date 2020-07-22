@@ -23,11 +23,13 @@ class CreateVendorsTable extends Migration
             $table->string('tin_no')->nullable();
             $table->string('city')->nullable();
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('category_id');
             $table->boolean('verified')->default(false);
             $table->softDeletes('deleted_at', 0);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 

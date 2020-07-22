@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -33,7 +34,8 @@ class VendorController extends Controller
             'city' => 'required|string',
             'postal_code' => 'required|string',
             'tin_no' => 'nullable|alpha_num',
-            'organization_type' => ['required', Rule::in(['sole proprietorship', 'partnership', 'corporation', 'limited liability company'])]
+            'organization_type' => ['required', Rule::in(['sole proprietorship', 'partnership', 'corporation', 'limited liability company'])],
+            'category' => 'required|integer|exists:categories,id',
         ]);
 
         $user = auth()->user();
@@ -48,6 +50,7 @@ class VendorController extends Controller
         $vendor->organization_type = $request->organization_type;
 
         $vendor->user()->associate($user);
+        $vendor->category()->associate(Category::findOrFail($request->category));
 
         $vendor->saveOrFail();
 

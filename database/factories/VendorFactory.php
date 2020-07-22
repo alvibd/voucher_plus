@@ -2,6 +2,7 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
+use App\Category;
 use App\Vendor;
 use Faker\Generator as Faker;
 use Faker\Provider\fr_FR\PhoneNumber;
@@ -19,6 +20,7 @@ $factory->define(Vendor::class, function (Faker $faker) {
         'organization_type' => $types[array_rand($types)],
         'user_id' => factory(App\User::class),
         'tin_no' => $faker->taxpayerIdentificationNumber,
-        'city' => $faker->city
+        'city' => $faker->city,
+        'category_id' => Category::inRandomOrder()->first()->id,
     ];
 });

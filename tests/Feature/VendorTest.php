@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Category;
 use App\User;
 use App\Vendor;
+use CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -20,7 +22,7 @@ class VendorTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->seed(LaratrustSeeder::class);
+        $this->seed([LaratrustSeeder::class, CategorySeeder::class]);
 
         $this->user = factory(User::class)->create();
 
@@ -40,6 +42,7 @@ class VendorTest extends TestCase
             'postal_code' => null,
             'organization_type' => null,
             'city' => null,
+            'category' => null,
         ]);
 
         $response->assertJsonValidationErrors([
@@ -48,7 +51,8 @@ class VendorTest extends TestCase
             'address' => 'The address field is required.',
             'postal_code' => 'The postal code field is required.',
             'organization_type' => 'The organization type field is required.',
-            'city' => 'The city field is required.'
+            'city' => 'The city field is required.',
+            'category' => 'The category field is required.'
         ]);
     }
 
@@ -76,7 +80,7 @@ class VendorTest extends TestCase
      */
     public function validate_organization_is_unique()
     {
-        $vendor = factory(Vendor::class)->create();
+        $vendor = factory(Vendor::class)->create(['category_id' => Category::inRandomOrder()->first()->id]);
 
         $vendor->user->attachRole('user');
 
@@ -86,7 +90,8 @@ class VendorTest extends TestCase
             'address' => $vendor->address,
             'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
-            'organization_type' => $vendor->organization_type
+            'organization_type' => $vendor->organization_type,
+            'category' => $vendor->category_id,
         ]);
 
         $response->assertJsonValidationErrors(['organization_name' => 'The organization name has already been taken.']);
@@ -119,7 +124,7 @@ class VendorTest extends TestCase
     public function validate_address_is_string()
     {
 
-        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id]);
+        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
         $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
@@ -127,7 +132,8 @@ class VendorTest extends TestCase
             'address' => 1586,
             'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
-            'organization_type' => $vendor->organization_type
+            'organization_type' => $vendor->organization_type,
+            'category' => $vendor->category_id,
         ]);
 
         $response->assertJsonValidationErrors(['address' => 'The address must be a string.']);
@@ -138,7 +144,7 @@ class VendorTest extends TestCase
      */
     public function validate_city_name_is_string()
     {
-        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id]);
+        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
         $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
@@ -146,7 +152,8 @@ class VendorTest extends TestCase
             'address' => $vendor->address,
             'postal_code' => $vendor->postal_code,
             'city' => 123,
-            'organization_type' => $vendor->organization_type
+            'organization_type' => $vendor->organization_type,
+            'category' => $vendor->category_id,
         ]);
 
         $response->assertJsonValidationErrors(['city' => 'The city must be a string.']);
@@ -179,7 +186,7 @@ class VendorTest extends TestCase
     public function validate_organization_type_is_valid()
     {
 
-        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id]);
+        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
         $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
@@ -187,7 +194,8 @@ class VendorTest extends TestCase
             'address' => $vendor->address,
             'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
-            'organization_type' => 'not_valid_type'
+            'organization_type' => 'not_valid_type',
+            'category' => $vendor->category_id,
         ]);
 
         $response->assertJsonValidationErrors(['organization_type' => 'The selected organization type is invalid.']);
@@ -198,7 +206,7 @@ class VendorTest extends TestCase
      */
     public function validate_tin_no_is_alphanumeric()
     {
-        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id]);
+        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
         $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
@@ -207,19 +215,16 @@ class VendorTest extends TestCase
             'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
             'tin_no' => '213-asda',
-            'organization_type' => $vendor->organization_type
+            'organization_type' => $vendor->organization_type,
+            'category' => $vendor->category_id,
         ]);
 
         $response->assertJsonValidationErrors(['tin_no' => 'The tin no may only contain letters and numbers.']);
     }
 
-    /**
-     * @test
-     */
-    public function vendor_registration_successful()
+    public function validate_category()
     {
-
-        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id]);
+        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
         $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
@@ -228,7 +233,45 @@ class VendorTest extends TestCase
             'city' => $vendor->city,
             'postal_code' => $vendor->postal_code,
             'tin_no' => $vendor->tin_no,
-            'organization_type' => $vendor->organization_type
+            'organization_type' => $vendor->organization_type,
+            'category' => 'not_integer',
+        ]);
+
+        $response->assertJsonValidationErrors(['category' => 'The category field must be an integer.']);
+
+        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+            'organization_name' => $vendor->name,
+            'contact_no' => $vendor->contact_no,
+            'address' => $vendor->address,
+            'city' => $vendor->city,
+            'postal_code' => $vendor->postal_code,
+            'tin_no' => $vendor->tin_no,
+            'organization_type' => $vendor->organization_type,
+            'category' => Category::max('id')+1,
+        ]);
+
+        $response->assertJsonValidationErrors(['category' => 'The category does not exists.']);
+    }
+
+    /**
+     * @test
+     */
+    public function vendor_registration_successful()
+    {
+
+        $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
+
+        // dd($vendor->category_id);
+
+        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+            'organization_name' => $vendor->name,
+            'contact_no' => $vendor->contact_no,
+            'address' => $vendor->address,
+            'city' => $vendor->city,
+            'postal_code' => $vendor->postal_code,
+            'tin_no' => $vendor->tin_no,
+            'organization_type' => $vendor->organization_type,
+            'category' => $vendor->category_id,
         ]);
 
         $this->assertDatabaseCount('vendors', 1);
@@ -251,7 +294,7 @@ class VendorTest extends TestCase
      */
     public function validate_only_owner_can_change_info()
     {
-        $vendor = factory(Vendor::class)->create();
+        $vendor = factory(Vendor::class)->create(['category_id' => Category::inRandomOrder()->first()->id]);
 
         $this->user->attachRole('owner');
 
@@ -280,7 +323,7 @@ class VendorTest extends TestCase
      */
     public function validate_contact_no_for_edit()
     {
-        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id]);
+        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
         $this->user->attachRole('owner');
 
         $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
@@ -300,7 +343,7 @@ class VendorTest extends TestCase
      */
     public function validate_address_for_edit()
     {
-        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id]);
+        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
         $this->user->attachRole('owner');
 
@@ -328,7 +371,7 @@ class VendorTest extends TestCase
      */
     public function validate_postal_code_for_edit()
     {
-        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id]);
+        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
         $this->user->attachRole('owner');
 
         $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
@@ -348,10 +391,10 @@ class VendorTest extends TestCase
      */
     public function edit_successful()
     {
-        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id]);
+        $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
         $this->user->attachRole('owner');
 
-        $new_info = factory(Vendor::class)->make(['user_id' => $this->user->id]);
+        $new_info = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
         $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
             'contact_no' => $new_info->contact_no,
