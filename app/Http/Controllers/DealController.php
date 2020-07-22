@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Deal;
 use App\deals;
 use App\Vendor;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DealController extends Controller
 {
@@ -29,6 +31,13 @@ class DealController extends Controller
     {
         if (!auth()->user()->hasRoleAndOwns('owner', $vendor)) {
             abort(403);
+        }
+
+        if($vendor->whereHas('deals', function(Builder $query){
+            $query->where('expiration_date', '>=', today()->toDateString());
+        })->exists())
+        {
+            abort(405, 'Cannot create another deal before the current one expires.');
         }
 
         $this->validate($request, [

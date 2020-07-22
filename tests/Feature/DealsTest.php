@@ -220,4 +220,23 @@ class DealsTest extends TestCase
 
         $response->assertOk()->assertExactJson(['message' => 'Succesfully created your campaign']);
     }
+
+    /**
+     * @test
+     */
+    public function validate_new_deals_can_only_be_created_if_none_running()
+    {
+        $deal = factory(Deal::class)->create(['vendor_id' => $this->vendor->id]);
+
+        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+            'campaign_name' => $deal->campaign_name,
+            'campaign_description' => $deal->campaign_description,
+            'terms_and_conditions' => $deal->terms_and_conditions,
+            'launching_date' => $deal->launching_date,
+            'expiration_date' => $deal->expiration_date,
+            'final_redemption_date' => $deal->final_redemption_date,
+        ]);
+
+        $response->assertStatus(405)->assertJson(['message' => 'Cannot create another deal before the current one expires.']);
+    }
 }
