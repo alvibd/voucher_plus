@@ -10,4 +10,9 @@ class Deal extends Model
     {
         return $this->belongsTo(Vendor::class);
     }
+
+    public function dealItems()
+    {
+        return $this->hasMany(DealItem::class);
+    }
 }

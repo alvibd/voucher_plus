@@ -31,6 +31,9 @@ Route::middleware('auth:api')->group(function(){
 
 Route::middleware(['auth:api', 'role:owner'])->prefix('/vendor')->group(function(){
     Route::patch('/edit/{vendor}', 'VendorController@update');
+
     Route::post('/{vendor}/create_deals', 'DealController@store');
+
+    Route::post('/{vendor}/{deal}/create_items', 'DealItemController@store');
 });
 

@@ -27,4 +27,9 @@ class Vendor extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function dealItems()
+    {
+        return $this->hasMany(DealItem::class);
+    }
 }

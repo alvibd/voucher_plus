@@ -44,7 +44,7 @@ class DealController extends Controller
             'campaign_name' => 'required|string|min:10',
             'campaign_description' => 'required|string|min:25',
             'terms_and_conditions' => 'required|string|min:25',
-            'launching_date' => 'required|date|after_or_equal:'.today()->toDateString(),
+            'launching_date' => 'required|date|after_or_equal:'.today()->addDay()->toDateString(),
             'expiration_date' => 'required|date|after:launching_date',
             'final_redemption_date' => 'required|date|after:expiration_date'
         ]);

@@ -21,6 +21,7 @@ class CreateDealsTable extends Migration
             $table->date('launching_date');
             $table->date('expiration_date');
             $table->date('final_redemption_date');
+            $table->boolean('published')->default(false);
             $table->unsignedBigInteger('vendor_id');
             $table->softDeletes('deleted_at', 0);
             $table->timestamps();

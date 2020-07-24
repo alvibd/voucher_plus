@@ -196,7 +196,7 @@ class DealsTest extends TestCase
             ]);
 
         $response->assertJsonValidationErrors([
-                'launching_date' => 'The launching date must be a date after or equal to '.today()->toDateString().'.',
+                'launching_date' => 'The launching date must be a date after or equal to '.today()->addDay()->toDateString().'.',
                 'expiration_date' => 'The expiration date must be a date after launching date.',
                 'final_redemption_date' => 'The final redemption date must be a date after expiration date.'
             ]);
@@ -210,6 +210,15 @@ class DealsTest extends TestCase
         $deal = factory(Deal::class)->make();
 
         $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+            'campaign_name' => $deal->campaign_name,
+            'campaign_description' => $deal->campaign_description,
+            'terms_and_conditions' => $deal->terms_and_conditions,
+            'launching_date' => $deal->launching_date,
+            'expiration_date' => $deal->expiration_date,
+            'final_redemption_date' => $deal->final_redemption_date,
+        ]);
+
+        $this->assertDatabaseHas('deals', [
             'campaign_name' => $deal->campaign_name,
             'campaign_description' => $deal->campaign_description,
             'terms_and_conditions' => $deal->terms_and_conditions,
