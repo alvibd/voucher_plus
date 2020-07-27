@@ -24,6 +24,11 @@ Route::middleware('api')->namespace('Auth')->group(function(){
     Route::post('/login', 'ApiAuthController@login');
 });
 
+Route::middleware('auth:api')->namespace('Auth')->group(function(){
+    Route::post('/me', 'ApiAuthController@me');
+    Route::post('/logout', 'ApiAuthController@logout');
+});
+
 Route::middleware('auth:api')->group(function(){
     Route::post('/vendor/registration', 'VendorController@store');
     Route::patch('/vendor/edit/{vendor}', 'VendorController@update');

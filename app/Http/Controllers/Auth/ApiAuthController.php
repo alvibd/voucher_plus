@@ -67,7 +67,7 @@ class ApiAuthController extends Controller
      */
     public function me()
     {
-        return response()->json($this->guard()->user());
+        return response()->json($this->guard('api')->user());
     }
 
     /**
