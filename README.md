@@ -41,3 +41,7 @@ Easy Installation
 
 - get into app bash: `$ docker-compose exec app bash`
 - run npm command: `$ npm run dev`
+
+
+## Resources and documentations
+- [React material UI](https://material-ui.com/)
