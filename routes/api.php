@@ -22,19 +22,19 @@ Route::middleware('api')->namespace('Auth')->group(function(){
     Route::post('/registration', 'ApiAuthController@register');
     // Route::post('/vendor/registration', 'ApiAuthController@vendorRegistration');
     Route::post('/login', 'ApiAuthController@login');
+    Route::get('/categories', 'CategoryController@show');
 });
 
-Route::middleware('auth:api')->namespace('Auth')->group(function(){
+Route::middleware(['auth:api', 'jwt.refresh'])->namespace('Auth')->group(function(){
     Route::post('/me', 'ApiAuthController@me');
     Route::post('/logout', 'ApiAuthController@logout');
 });
 
-Route::middleware('auth:api')->group(function(){
+Route::middleware(['auth:api', 'jwt.refresh'])->group(function(){
     Route::post('/vendor/registration', 'VendorController@store');
-    Route::patch('/vendor/edit/{vendor}', 'VendorController@update');
 });
 
-Route::middleware(['auth:api', 'role:owner'])->prefix('/vendor')->group(function(){
+Route::middleware(['auth:api', 'role:owner', 'jwt.refresh'])->prefix('/vendor')->group(function(){
     Route::patch('/edit/{vendor}', 'VendorController@update');
 
     Route::post('/{vendor}/create_deals', 'DealController@store');

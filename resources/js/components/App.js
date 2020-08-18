@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
 import clsx from 'clsx';
-import { makeStyles, useTheme, ThemeProvider  } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, ThemeProvider  } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -24,6 +24,7 @@ import Welcome from './Welcome'
 import Home from './Home'
 import Login from './account/Login'
 import Registration from './account/Registration'
+import CreateVendor from './vendor/CreateVendor';
 
 const drawerWidth = 240;
 
@@ -88,7 +89,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function App() {
     const classes = useStyles();
-    const theme = useTheme();
+    const theme = createMuiTheme({palette: {type: 'dark'}});
+
     const [open, setOpen] = React.useState(false);
     const appName = process.env.MIX_APP_NAME
 
@@ -156,6 +158,7 @@ export default function App() {
                             <div className={classes.drawerHeader} />
                             <Switch>
                                 <PrivateRoute exact path="/home" component={Home} />
+                                <PrivateRoute exact path="/vendor/registration" component={CreateVendor} />
                                 <Route exact path="/" component={Welcome} />
                                 <Route exact path="/login" component={Login} />
                                 <Route exact path="/register" component={Registration} />

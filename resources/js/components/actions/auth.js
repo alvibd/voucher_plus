@@ -10,9 +10,16 @@ export const loadUser = (dispatch, state) => {
     return axios
     .post('/api/me', null,tokenConfig(state))
     .then((res) => {
+
+        let token = res.headers.authorization.slice(7);
+        let payload = res.data.data;
+        // console.log(payload)
+
+
         dispatch({
             type: "USER_LOADED",
-            payload: res.data,
+            payload: payload,
+            token : token,
         });
     })
     .catch((err) => {
@@ -82,7 +89,7 @@ export const registration = (dispatch, name, email, password, password_confirmat
     const body = JSON.stringify({ name, email, password, password_confirmation, sex });
 
     return axios
-    .post('/api/vendor/register', body, config)
+    .post('/api/registration', body, config)
     .then((res) => {
         dispatch({
             type: "REGISTER_SUCCESS",

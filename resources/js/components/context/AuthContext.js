@@ -4,7 +4,8 @@ const AuthState = {
     isAuthenticated : localStorage.getItem('token') != null ? true : false,
     user: null,
     access_token : localStorage.getItem('token') != null ? localStorage.getItem('token') : null,
-    isLoading: false
+    isLoading: false,
+    roles: [],
 }
 
  //Create Context
@@ -35,11 +36,14 @@ function AuthReducer(state,action){
             isLoading: true,
         };
         case "USER_LOADED":
+        window.localStorage.setItem('token', action.token);
         return {
             ...state,
             user: action.payload.name,
             isAuthenticated: true,
             isLoading: false,
+            access_token: action.token,
+            roles : action.payload.roles
         };
         case "LOGIN_SUCCESS":
         case "REGISTER_SUCCESS":
