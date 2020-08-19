@@ -17,6 +17,7 @@ import { AuthContext } from '../context/AuthContext';
 import {loadUser, logout} from '../actions/auth'
 import AdminBar from './AdminBar';
 import UserBar from './UserBar';
+import {route} from '../common/Routes'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -65,7 +66,7 @@ export default function Navbar() {
 
     const guestLinks = (
         <Fragment>
-            <RouteLink to="/login" className={classes.navLink}>
+            <RouteLink to={route('login')} className={classes.navLink}>
                 <ListItem button>
                     <ListItemIcon>
                         <ExitToAppIcon/>
@@ -105,7 +106,7 @@ export default function Navbar() {
 
     return (
         <List>
-            <RouteLink to='/'>
+            <RouteLink to={route('welcome')}>
                 <ListItem button>
                     <ListItemIcon>
                         <HomeOutlinedIcon />

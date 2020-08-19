@@ -6,6 +6,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { AuthContext } from '../context/AuthContext'
 
 import {CoffeeLoading} from 'react-loadingg'
+import { route } from './Routes';
 
 
 
@@ -18,7 +19,7 @@ function PrivateRoute ({ component: Component, ...rest }) {
       if (state.isLoading) {
         return <CoffeeLoading/>;
       } else if (!state.isAuthenticated) {
-        return <Redirect to="/login" state={state}/>;
+        return <Redirect to={route('login')} state={state}/>;
       } else {
         return <Component {...props} />;
       }

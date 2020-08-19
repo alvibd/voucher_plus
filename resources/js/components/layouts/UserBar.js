@@ -8,13 +8,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from '@material-ui/core';
 
 import { AuthContext } from '../context/AuthContext';
+import { route } from '../common/Routes';
 
 export default function UserBar() {
     const {state, dispatch} = useContext(AuthContext)
 
     return (
         <Fragment>
-            <RouteLink to="/vendor/registration">
+            <RouteLink to={route('vendor.registration')}>
                 <ListItem button>
                     <ListItemIcon>
                         <Icon className="material-icons">account_box</Icon>

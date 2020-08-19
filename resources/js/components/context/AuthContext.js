@@ -25,16 +25,21 @@ const AuthState = {
 function AuthReducer(state,action){
     switch (action.type) {
         case "REFRESH_TOKEN":
-        window.localStorage.setItem('token', action.payload.access_token);
+        window.localStorage.setItem('token', action.token);
         return {
             ...state,
-            access_token: action.payload.access_token,
+            access_token: action.token,
         };
         case "USER_LOADING":
         return {
             ...state,
             isLoading: true,
         };
+        case "LOADED":
+            return {
+                ...state,
+                isLoading: false
+            }
         case "USER_LOADED":
         window.localStorage.setItem('token', action.token);
         return {

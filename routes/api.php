@@ -22,6 +22,9 @@ Route::middleware('api')->namespace('Auth')->group(function(){
     Route::post('/registration', 'ApiAuthController@register');
     // Route::post('/vendor/registration', 'ApiAuthController@vendorRegistration');
     Route::post('/login', 'ApiAuthController@login');
+});
+
+Route::middleware('api')->group(function(){
     Route::get('/categories', 'CategoryController@show');
 });
 

@@ -25,6 +25,7 @@ import Home from './Home'
 import Login from './account/Login'
 import Registration from './account/Registration'
 import CreateVendor from './vendor/CreateVendor';
+import { route } from './common/Routes';
 
 const drawerWidth = 240;
 
@@ -157,11 +158,11 @@ export default function App() {
                         >
                             <div className={classes.drawerHeader} />
                             <Switch>
-                                <PrivateRoute exact path="/home" component={Home} />
-                                <PrivateRoute exact path="/vendor/registration" component={CreateVendor} />
-                                <Route exact path="/" component={Welcome} />
-                                <Route exact path="/login" component={Login} />
-                                <Route exact path="/register" component={Registration} />
+                                <PrivateRoute exact path={route('home')} component={Home} />
+                                <PrivateRoute exact path={route('vendor.registration')} component={CreateVendor} />
+                                <Route exact path={route('welcome')} component={Welcome} />
+                                <Route exact path={route('login')} component={Login} />
+                                <Route exact path={route('registration')} component={Registration} />
                             </Switch>
                         </main>
                         <Drawer
