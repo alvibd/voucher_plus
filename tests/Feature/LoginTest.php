@@ -71,14 +71,15 @@ class LoginTest extends TestCase
     {
         $this->seed(LaratrustSeeder::class);
 
-        $user = factory(User::class)->create();
+        $user = factory(User::class)->create(['email' => 'new_user@app.com']);
+        // dd($user->email);
 
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
             'password' => 'asdasd',
         ]);
 
-        // dd($response->getContent());
+        // $response->dump();
 
         $response->assertStatus(401)->assertExactJson(['error' => 'Unauthorized']);
     }
@@ -90,7 +91,7 @@ class LoginTest extends TestCase
     {
         $this->seed(LaratrustSeeder::class);
 
-        $user = factory(User::class)->create();
+        $user = factory(User::class)->create(['email' => 'new_user@app.com']);
 
         $response = $this->postJson('/api/login', [
             'email' => $user->email,

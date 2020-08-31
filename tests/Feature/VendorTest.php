@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use LaratrustSeeder;
 use Tests\TestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class VendorTest extends TestCase
 {
@@ -35,7 +36,9 @@ class VendorTest extends TestCase
     public function validate_required_fields_exists()
     {
         // dd($token);
-        $response = $this->actingAs($this->user, 'api')->postJson('api/vendor/registration', [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson('api/vendor/registration', [
             'organization_name' => null,
             'contact_no' => null,
             'address' => null,
@@ -63,7 +66,9 @@ class VendorTest extends TestCase
     {
         $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id]);
 
-        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson('/api/vendor/registration', [
             'organization_name' => 123,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
@@ -84,7 +89,9 @@ class VendorTest extends TestCase
 
         $vendor->user->attachRole('user');
 
-        $response = $this->actingAs($vendor->user, 'api')->postJson('/api/vendor/registration', [
+        $token = JWTAuth::fromUser($vendor->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
@@ -126,7 +133,9 @@ class VendorTest extends TestCase
 
         $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
-        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => 1586,
@@ -146,7 +155,9 @@ class VendorTest extends TestCase
     {
         $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
-        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
@@ -188,7 +199,9 @@ class VendorTest extends TestCase
 
         $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
-        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
@@ -208,7 +221,9 @@ class VendorTest extends TestCase
     {
         $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
-        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
@@ -226,7 +241,9 @@ class VendorTest extends TestCase
     {
         $vendor = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
-        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
@@ -239,7 +256,7 @@ class VendorTest extends TestCase
 
         $response->assertJsonValidationErrors(['category' => 'The category field must be an integer.']);
 
-        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+        $response = $this->withHeader('Authorization', $response->headers->get('Authorization'))->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
@@ -263,7 +280,9 @@ class VendorTest extends TestCase
 
         // dd($vendor->category_id);
 
-        $response = $this->actingAs($this->user, 'api')->postJson('/api/vendor/registration', [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson('/api/vendor/registration', [
             'organization_name' => $vendor->name,
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
@@ -306,7 +325,9 @@ class VendorTest extends TestCase
             'tin_no' => $vendor->tin_no,
         ]);
 
-        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->patchJson("/api/vendor/edit/{$vendor->id}", [
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
             'postal_code' => $vendor->postal_code,
@@ -326,7 +347,9 @@ class VendorTest extends TestCase
         $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
         $this->user->attachRole('owner');
 
-        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->patchJson("/api/vendor/edit/{$vendor->id}", [
             'contact_no' => null,
             'address' => $vendor->address,
             'postal_code' => $vendor->postal_code,
@@ -347,7 +370,9 @@ class VendorTest extends TestCase
 
         $this->user->attachRole('owner');
 
-        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->patchJson("/api/vendor/edit/{$vendor->id}", [
             'contact_no' => $vendor->contact_no,
             'address' => null,
             'postal_code' => $vendor->postal_code,
@@ -356,7 +381,7 @@ class VendorTest extends TestCase
 
         $response->assertJsonValidationErrors(['address' => 'The address field is required.']);
 
-        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+        $response = $this->withHeader('Authorization', $response->headers->get('Authorization'))->patchJson("/api/vendor/edit/{$vendor->id}", [
             'contact_no' => $vendor->contact_no,
             'address' => 234,
             'postal_code' => $vendor->postal_code,
@@ -374,7 +399,9 @@ class VendorTest extends TestCase
         $vendor = factory(Vendor::class)->create(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
         $this->user->attachRole('owner');
 
-        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->patchJson("/api/vendor/edit/{$vendor->id}", [
             'contact_no' => $vendor->contact_no,
             'address' => $vendor->address,
             'postal_code' => null,
@@ -396,7 +423,9 @@ class VendorTest extends TestCase
 
         $new_info = factory(Vendor::class)->make(['user_id' => $this->user->id, 'category_id' => Category::inRandomOrder()->first()->id]);
 
-        $response = $this->actingAs($this->user, 'api')->patchJson("/api/vendor/edit/{$vendor->id}", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->patchJson("/api/vendor/edit/{$vendor->id}", [
             'contact_no' => $new_info->contact_no,
             'address' => $new_info->address,
             'postal_code' => $new_info->postal_code,

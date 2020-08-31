@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use LaratrustSeeder;
 use TagSeeder;
 use Tests\TestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class DealsTest extends TestCase
 {
@@ -40,7 +41,9 @@ class DealsTest extends TestCase
 
         $not_owner->attachRole('owner');
 
-        $response = $this->actingAs($not_owner, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals");
+        $token = JWTAuth::fromUser($not_owner);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/create_deals");
 
         $response->assertForbidden();
     }
@@ -50,7 +53,9 @@ class DealsTest extends TestCase
      */
     public function validate_required_fields()
     {
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
             'campaign_name' => null,
             'campaign_description' => null,
             'terms_and_conditions' => null,
@@ -76,7 +81,9 @@ class DealsTest extends TestCase
     {
         $deal = factory(Deal::class)->make();
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
             'campaign_name' => 123,
             'campaign_description' => $deal->campaign_description,
             'terms_and_conditions' => $deal->terms_and_conditions,
@@ -87,7 +94,7 @@ class DealsTest extends TestCase
 
         $response->assertJsonValidationErrors(['campaign_name' => 'The campaign name must be a string.']);
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $response = $this->withHeader('Authorization', $response->headers->get('Authorization'))->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
             'campaign_name' => 'short',
             'campaign_description' => $deal->campaign_description,
             'terms_and_conditions' => $deal->terms_and_conditions,
@@ -103,7 +110,9 @@ class DealsTest extends TestCase
     {
         $deal = factory(Deal::class)->make();
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
             'campaign_name' => $deal->campaign_name,
             'campaign_description' => 123,
             'terms_and_conditions' => $deal->terms_and_conditions,
@@ -114,7 +123,7 @@ class DealsTest extends TestCase
 
         $response->assertJsonValidationErrors(['campaign_description' => 'The campaign description must be a string.']);
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $response = $this->withHeader('Authorization', $response->headers->get('Authorization'))->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
             'campaign_name' => $deal->campaign_name,
             'campaign_description' => 'too short',
             'terms_and_conditions' => $deal->terms_and_conditions,
@@ -133,7 +142,9 @@ class DealsTest extends TestCase
     {
         $deal = factory(Deal::class)->make();
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
             'campaign_name' => $deal->campaign_name,
             'campaign_description' => $deal->campaign_description,
             'terms_and_conditions' => 123,
@@ -144,7 +155,7 @@ class DealsTest extends TestCase
 
         $response->assertJsonValidationErrors(['terms_and_conditions' => 'The terms and conditions must be a string.']);
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $response = $this->withHeader('Authorization', $response->headers->get('Authorization'))->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
             'campaign_name' => $deal->campaign_name,
             'campaign_description' => $deal->campaign_description ,
             'terms_and_conditions' => 'too short',
@@ -163,7 +174,9 @@ class DealsTest extends TestCase
     {
         $deal = factory(Deal::class)->make();
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
             'campaign_name' => $deal->campaign_name,
             'campaign_description' => $deal->campaign_description,
             'terms_and_conditions' => $deal->terms_and_conditions,
@@ -186,7 +199,9 @@ class DealsTest extends TestCase
     {
         $deal = factory(Deal::class)->make();
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
                 'campaign_name' => $deal->campaign_name,
                 'campaign_description' => $deal->campaign_description,
                 'terms_and_conditions' => $deal->terms_and_conditions,
@@ -209,7 +224,9 @@ class DealsTest extends TestCase
     {
         $deal = factory(Deal::class)->make();
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
             'campaign_name' => $deal->campaign_name,
             'campaign_description' => $deal->campaign_description,
             'terms_and_conditions' => $deal->terms_and_conditions,
@@ -237,7 +254,9 @@ class DealsTest extends TestCase
     {
         $deal = factory(Deal::class)->create(['vendor_id' => $this->vendor->id]);
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/create_deals", [
             'campaign_name' => $deal->campaign_name,
             'campaign_description' => $deal->campaign_description,
             'terms_and_conditions' => $deal->terms_and_conditions,

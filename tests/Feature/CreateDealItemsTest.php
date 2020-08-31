@@ -10,6 +10,7 @@ use App\Vendor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CreateDealItemsTest extends TestCase
 {
@@ -45,7 +46,11 @@ class CreateDealItemsTest extends TestCase
 
         $not_owner->attachRole('owner');
 
-        $response = $this->actingAs($not_owner, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items");
+        $token = JWTAuth::fromUser($not_owner);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])
+                        // ->actingAs($not_owner)
+                        ->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items");
 
         $response->assertForbidden();
     }
@@ -57,7 +62,9 @@ class CreateDealItemsTest extends TestCase
     {
         $running_deal = factory(Deal::class)->create(['vendor_id' => $this->vendor->id, 'launching_date' => today()]);
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$running_deal->id}/create_items");
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$running_deal->id}/create_items");
 
         $response->assertStatus(405)->assertJson(['message' => 'Not allowed to add item(s) to running deal.']);
     }
@@ -99,15 +106,15 @@ class CreateDealItemsTest extends TestCase
 
         // dd($request);
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", ['deal_items' => null]);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", ['deal_items' => null]);
 
         // $response->dump();
 
         $response->assertJsonValidationErrors(['deal_items' => 'The deal items field is required.']);
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
-
-        // $response->dump();
+        $response = $this->withHeader('Authorization', $response->headers->get('Authorization'))->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         $response->assertJsonValidationErrors([
             "deal_items.0.item_name" => "The deal_items.0.item_name field is required.",
@@ -151,7 +158,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -181,7 +190,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -210,7 +221,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -239,7 +252,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -268,7 +283,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -297,7 +314,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -326,7 +345,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -355,7 +376,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -384,7 +407,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -413,7 +438,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -442,7 +469,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -471,7 +500,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => 'ads',
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -500,7 +531,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => [123],
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
@@ -529,7 +562,9 @@ class CreateDealItemsTest extends TestCase
             'tags' => $tags,
         ];
 
-        $response = $this->actingAs($this->user, 'api')->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
+        $token = JWTAuth::fromUser($this->user);
+
+        $response = $this->withHeaders(['Authorization' => "Bearer {$token}"])->postJson("/api/vendor/{$this->vendor->id}/{$this->deal->id}/create_items", $request);
 
         // $response->dump();
 
